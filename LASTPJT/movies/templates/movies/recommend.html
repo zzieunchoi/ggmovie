@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<hr>
+<div class="container">
+  <div class ="d-flex justify-content-center">
+    <h1><b>추천할 만한 영화</b></h1>
+  </div>
+</div>
+<br>
+<br>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  {% for movie in recommend_movie %}
+  <div class="col">
+    <div class="card h-100 ">
+      <img src="{{movie.poster_path}}"  class="card-img-top" alt="{{movie.title}}의 포스터">
+      <div class="card-body">
+        <h5 class="card-title"><b>{{movie.title}}</b></h5>
+      </div>
+      <div class="card-footer">
+        <div class = "container">
+          <div class = "d-flex justify-content-end">
+            <a class = "btn btn-success" href = "{% url "movies:detail" movie.pk %}">상세보기</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<br>
+  {% endfor %}
+</div>
+
+
+{% endblock content %}

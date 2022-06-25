@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block content %}
+<br>
+<br>
+{% if user.is_authenticated %}
+<div class = "container">
+  <div class = "row">
+    <div class ="col-10">
+      <h1 class = "subject"><b>Community</b></h1>
+      <p class = "subject">극장/이벤트</p>
+    </div>
+    <div class = "col-2">
+        <a href = "{% url 'community:create'%}">
+          <img src="{% static 'plus.png'%}" width = "35" height = "35">
+        </a>
+    </div>
+  </div>
+</div>
+
+<br>
+<br>
+
+<div class = "container">
+  <div class="d-flex justify-content-around">
+    <ul class ="list-group list-group-horizontal">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <a href = "{% url 'community:index' %}" class = "nav-link">전체</a>
+      <span class="btn btn-outline-info rounded-pill btn-sm">{{commus_all|length}}</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <a href = "{% url 'community:index_commu1' %}" class = "nav-link">공지</a>
+      <span class="btn btn-outline-info rounded-pill btn-sm">{{commus_announce|length}}</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <a href = "{% url 'community:index_commu2' %}" class = "nav-link">잡담</a>
+      <span class="btn btn-outline-info rounded-pill btn-sm">{{commus_chat|length}}</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <a href = "{% url 'community:index_commu3' %}" class = "nav-link">영화리뷰</a>
+      <span class="btn btn-outline-info rounded-pill btn-sm">{{commus_review|length}}</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <a href = "{% url 'community:index_commu4' %}" class = "nav-link">극장/이벤트</a>
+      <span class="btn btn-outline-info rounded-pill btn-sm">{{communitys|length}}</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <a href = "{% url 'community:index_commu5' %}" class = "nav-link">기타</a>
+      <span class="btn btn-outline-info rounded-pill btn-sm">{{commus_etc|length}}</span>
+    </li>
+    </ul>
+  </div>
+</div>
+
+<hr>
+  <div class = "community_article">
+  {% for community in communitys %}
+  <br>
+  <br>
+    <div class = "container">
+      <div class ="row">
+        <div class = "col-9">
+          <p><a href="{% url 'accounts:profile' user.pk %}" class = "subject"><b>{{community.user }}</b></a></p>
+          <p class = "subject">[{{community.category|slice:"2:-3"}}]</p>
+          <a href="{% url 'community:detail' community.pk %}" class ="fw-bold fs-2 text-decoration-none subject">{{community.title }}</a>
+          <br>
+          <br>
+          <p class = "article_content">{{community.content }}</p>
+          <br>
+          {% if user in community.like.all %}
+            <img class = "like" src ="{% static 'heart.png'%}" width = "35" height = "35" data-id = "{{community.pk}}">
+          {% else %}
+            <img class = "like" src = "{% static 'love.png'%}" width = "35" height = "35" data-id = "{{community.pk}}">
+          {% endif %}
+          <br>
+          <br>
+          <p class="LikeUser-{{community.pk }} article_content">{{ community.like.all|length }} 명이 이 글을 좋아합니다.</p>
+          <p class="article_content">{{community.created_at|date:"Y-m-d P"}}</p>
+        </div>
+        <div class = "col-3">
+        <!--community 글 이미지 불러오기-->
+        {% if community.imgfile %}
+        <img src="{{community.imgfile.url}}" class="rounded" alt="글 이미지" width = "200" heigth = "250">
+        {% else %}
+        <!--이미지 없음 가져오기-->
+        <img src="{% static 'logo.jpg' %}" class="rounded" alt="이미지 없음" width = "200" heigth = "250">
+        {% endif %} 
+        </div>
+      </div>
+    </div>
+    <hr>
+  {% endfor %}
+  </div>
+
+{% else %}
+  <a href = "{% url 'accounts:login' %}">글을 작성하려면 로그인 먼저 해주세요 !</a>
+{% endif %}
+
+{% endblock %}
+
+{% block script %}
+<script>
+  // CODE HERE
+  const likeButtons = document.querySelectorAll('.like')
+  likeButtons.forEach(function (button) {
+    button.addEventListener('click', function(event) {
+      const communityId = Number(event.target.dataset.id)
+      console.log(communityId)
+      axios.defaults.xsrfCookieName = 'csrftoken'
+      axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN'
+      axios.post(`/community/${communityId}/like/`)
+      .then (function(response){
+        console.log(response)
+        const likeCount = document.querySelector(`.LikeUser-${communityId }`)
+        likeCount.innerText = response.data.count + '명이 이 글을 좋아합니다.'
+        
+        if (response.data.like) {
+          event.target.setAttribute('src',"{% static 'heart.png'%}")
+        } else {
+          event.target.setAttribute('src',"{% static 'love.png'%}")
+        }
+      })
+    })
+  })
+</script>
+{% endblock %}

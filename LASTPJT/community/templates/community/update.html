@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br>
+<br>
+<h1 class = "subject">게시글 수정하기</h1>
+
+<hr>
+<form action="{% url 'community:update' community.pk %}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <div class = "container">
+    <div class = "d-flex justify-content-end">
+      <a class = "also_btn" href="{% url 'community:update' community.pk %}">수정전으로 돌아가기</a>
+      <input class="btn btn-outline-dark btn-sm" type="submit" value = "수정 완료">
+    </div>
+  </div>
+</form>
+<a class="btn btn-outline-dark btn-sm" href="{% url 'community:index' %}">목록 돌아가기</a>
+
+{% endblock content %}

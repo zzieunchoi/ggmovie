@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<hr>
+<h1 class = "subject">나를 소개해보세요!</h1>
+<br>
+
+<form action="{% url 'accounts:profile_create' person.pk%}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{form.as_p}}
+  <div class = "container">
+    <div class = "d-flex justify-content-end">
+      <input type= "submit" value = "글 등록">
+    </div>
+  </div>
+</form>
+<hr>
+
+{% endblock content %}

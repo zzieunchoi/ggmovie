@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br>
+<br>
+<form action = "{% url 'accounts:profile_update' user.pk profile.pk%}"method = "POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type = "submit" value = "수정하기">
+</form>
+
+{% endblock content %}

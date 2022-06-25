@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<br>
+<br>
+<br>
+  <h1 class ="subject"><b>{{ community.title }}</b></h1>
+  <br>
+  <div class = "container">
+    <div class = "d-flex justify-content-end">
+      <a href = "{% url 'accounts:profile' user.pk %}">
+      <p>작성자: {{community.user}}</p>
+      </a>
+    </div>
+  </div>
+  <br>
+
+
+  {% if community.imgfile %}
+  <div class = "container">
+    <div class = "row">
+      <div class = "col-9">
+        <p class = "article_content">{{ community.content }}</p>
+      </div>
+      <div class = "col-3">
+        <img src="{{community.imgfile.url}}" class="img-fluid rounded-start" alt="...">
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <p class = "article_content">{{ community.content }}</p>
+  {% endif %}
+  <br>
+  <br>
+<br>
+<br>
+  <p class = "article_content">작성 시각: {{ community.created_at|date:'Y-m-d P' }}</p>
+  <p class = "article_content">수정 시각: {{ community.updated_at|date:'Y-m-d P' }}</p>
+    
+<div class="container">
+  <div class = "d-flex justify-content-end">
+    {% if community.user == request.user %}
+      <a class = "btn_submit" href ="{% url 'community:update' community.pk %}">글 수정</a>
+      <form action="{% url 'community:delete' community.pk %}" method = "POST">
+        {% csrf_token %}
+        <input type = "submit" value = "글 삭제">
+      </form>
+    {% endif %}
+  </div>
+</div>
+<br>
+<hr>
+
+<p class = "fs-1"><b>👩‍💻👨‍💻<b></p>
+  {% if comments|length %}
+    <p><b>{{ comments|length }}개의 댓글이 있습니다.</b></p>
+  {% endif %}
+  <ul>
+    {% for comment in comments %}
+    <li>
+      <div class = "container">
+        <div class ="row">
+          <div class = "col-10">
+            <p class = "fs-5"><b>{{ comment.user }}</b></p>
+            <h3 class = "subject">{{ comment.content }}</h3>
+            <br>
+            <p class ="text-muted article_content">작성시간: {{comment.created_at|date:'Y-m-d P'}}</p>
+            <p class ="text-muted article_content">수정시간: {{comment.updated_at|date:'Y-m-d P'}}</p>
+          </div>
+          
+          {% if comment.user == request.user %}
+          <div class = "col-2">
+            <a class = "also_btn" href = "{% url 'community:comments_update' community.pk comment.pk %}">댓글 수정</a>
+            <form action = "{% url 'community:comment_delete' community.pk comment.pk %}" method = "POST">
+              {% csrf_token %}
+              <input class="btn btn-outline-danger btn-sm" type="submit" value = "댓글 삭제">
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </li>
+    {% empty %}
+      <p>⬇️ 아래에 영화 리뷰 작성하기 ⬇️</p>
+    {% endfor %}
+  </ul>
+
+<hr>
+{% if request.user.is_authenticated %}
+  <form action="{% url 'community:comment_create' community.pk %}" method="POST">
+    {% csrf_token %}
+    {{ comment_form }}
+    <div class = "container">
+      <div class = "d-flex justify-content-end">
+        <input type="submit" value = "댓글 등록">
+      </div>
+    </div>
+  </form>
+{% else %}
+  <a href="{% url 'accounts:login' %}">[댓글을 작성하려면 로그인하세요.]</a>
+{% endif %}
+
+<a class = "btn btn-outline-dark btn-sm" href="{% url 'community:index' %}">커뮤니티 목록</a>
+<br>
+<br>
+{% endblock content %}

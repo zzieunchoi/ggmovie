@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<hr>
+<h1 class = "subject">커뮤니티 글 작성하기</h1>
+<br>
+
+<form action="{% url 'community:create' %}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{form.as_p}}
+  <div class = "container">
+    <div class = "d-flex justify-content-end">
+      <input type= "submit" value = "글 등록">
+    </div>
+  </div>
+</form>
+<hr>
+
+<a class="btn btn-outline-dark btn-sm" href="{% url 'community:index' %}">커뮤니티 글 목록</a>
+
+
+{% endblock content %}

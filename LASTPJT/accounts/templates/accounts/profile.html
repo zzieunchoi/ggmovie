@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<br>
+<br>
+  <h1><b>WELCOME</b></h1>
+  <p class = "subject">{{person.username}}님의 프로필페이지</p>
+  <br>
+  <br>
+  <div class="container card mb-3">
+    <div class="row g-0">
+      <div class="col-md-2">
+        <!--프로필 사진 넣기-->
+        {% if profile.imgfile %}
+          <img src="{{profile.imgfile.url}}" alt="" width = "120" height = "150">
+        {% else %}
+          <img src="{% static 'user.png' %}" class="mt-4 mb-4 rounded-start" width = "120" height = "120" alt="프로필 사진">
+        {% endif %}
+      </div>
+      <div class="col-md-10">
+        <div class="card-body">
+          <h5 class="card-title subject"><b>{{person.username}}</b></h5>
+          <p>{{profile.introduce}}</p>
+          <div class = "container">
+            <div class = "d-flex justify-content-end">
+              {% if profile %}
+                <form action="{% url 'accounts:profile_delete' person.pk profile.pk%}" method = "POST">
+                  {% csrf_token %}
+                  <input class="btn btn-outline-danger btn-sm" type="submit" value = "소개글 삭제">
+                </form>
+                <a class = "also_btn" href="{% url 'accounts:profile_update' person.pk profile.pk %}">소개글 수정</a>
+              {% else %}
+                <a class = "mt-5 also_btn" href = "{% url 'accounts:profile_create' person.pk %}">소개글 작성하기</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% with followings=person.followings.all followers=person.followers.all %}
+    <div class = "container">
+      <div class = "d-flex justify-content-end">
+        <div class = "followdata">
+          <p>팔로잉 : {{ followings|length }} 팔로워 : {{ followers|length }}</p>
+        </div>
+        <br>
+        {% if request.user != person %}
+          <div>
+            {% if request.user in followers %}
+              <img class = "follow" src = "{% static 'unfollow.png'%}" width = "35" height = "35" data-person-id = "{{person.pk}}">
+            {% else %}
+              <img class = "follow" src ="{% static 'follow.png'%}" width = "35" height = "35" data-person-id = "{{person.pk}}">
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    <br>
+    <hr>
+
+    <br>
+    <h3 class = "subject"><b>{{ person.username }}님이 쓴 커뮤니티글</b></h3>
+    <br>
+    {% for community in person.community_set.all %}
+    <br>
+    <div class = "container">
+      <div class ="row">
+        <div class = "col-9">
+          <p class = "subject">[{{community.category|slice:"2:-3"}}]</p>
+          <a href="{% url 'community:detail' community.pk %}" class ="fw-bold fs-2 text-decoration-none subject">{{community.title }}</a>
+          <br>
+          <br>
+          <p class = "article_content">{{community.content }}</p>
+          <br>
+          <br>
+          <br>
+        </div>
+        
+        <div class = "col-3">
+        <!--community 글 이미지 불러오기-->
+        {% if community.imgfile %}
+          <img src="{{community.imgfile.url}}" class="rounded" alt="글 이미지" width = "150" heigth = "200">
+        {% else %}
+          <!--이미지 없음 가져오기-->
+          <img src="{% static 'logo.jpg' %}" class="rounded" alt="이미지 없음" width = "200" heigth = "250">
+        {% endif %} 
+        </div>
+      </div>
+    </div>
+    <br>
+    <hr>
+    {% endfor %}
+    <br>
+    <br>
+    <hr>
+  {% endwith %}
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+
+  const followUser = document.querySelector('.follow')
+  followUser.addEventListener('click', function(event) {
+    event.preventDefault()
+    let personId = event.target.getAttribute('data-person-id')
+
+    axios.defaults.xsrfCookieName = 'csrftoken'
+    axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN'
+
+    axios.post(`/accounts/${personId}/follow/`)
+    .then (res => {
+      const followData = document.querySelector('.followdata')
+      let isFollower = res.data.follow
+      let followers_count = res.data.followers_count
+      let following_count = res.data.followings_count
+      
+      if (isFollower === true) {
+        followUser.setAttribute('src',"{% static 'unfollow.png' %}")
+      } else {
+        followUser.setAttribute('src',"{% static 'follow.png' %}")
+      }
+      
+      followData.innerText = `팔로잉 : ${following_count} 팔로워 : ${followers_count}`
+
+    })
+  })
+
+</script>
+{% endblock script %}

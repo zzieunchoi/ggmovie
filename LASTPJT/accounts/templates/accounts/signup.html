@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block style %}
+
+<style>
+  #id_username {
+    width: 240px;
+    height: 30px;
+  }
+  #id_password1 {
+    width: 240px;
+    height: 30px;
+  }
+  #id_password2 {
+    width: 240px;
+    height: 30px;
+  }
+  input{
+    text-align:center;
+ }
+</style>
+
+
+{% endblock style %}
+
+{% block content %}
+<br>
+<br>
+<div class = "container">
+  <div class = "d-flex justify-content-center">
+    <h1 class = "subject ">회원가입</h1>
+  </div>
+</div>
+<br>
+<div class = "container">
+  <div class = "d-flex justify-content-center">
+    <form action="" method="POST" class = "text-center">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div class = "container">
+        <div class = "d-flex justify-content-center">
+          <input type="submit" value ="회원가입">
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock  %}

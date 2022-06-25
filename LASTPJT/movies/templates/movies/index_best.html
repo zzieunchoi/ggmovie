@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block content %}
+
+<br>
+<br>
+<div class = "container">
+  <div class = "d-flex justify-content-center">
+    <h1 class = "subject"><b>MOVIE</b></h1>
+  </div>
+</div>
+
+<div class = "container">
+  <div class="d-flex justify-content-around">
+    <a href = "{% url 'movies:index' %}" class = "text-decoration-none subject">전체</a>
+    <a href = "{% url 'movies:index_best' %}" class = "text-decoration-none subject">인기순</a>
+    <a href = "{% url 'movies:index_date' %}" class = "text-decoration-none subject">개봉순</a>
+  </div>
+</div>
+<br>
+<br>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  {% for movie in movies %}
+  <div class="col">
+    <div class="card h-100 ">
+      <img src="{{movie.poster_path}}"  class="card-img-top" alt="{{movie.title}}의 포스터">
+      <div class="card-body">
+        <h5 class="card-title"><b>{{movie.title}}</b></h5>
+        <p class="card-text">{{movie.overview|truncatechars:75}}</p>
+      </div>
+      <div class="card-footer">
+        <div class = "container">
+          <div class = "d-flex justify-content-end">
+            <a class = "btn btn-success" href = "{% url "movies:detail" movie.pk %}">상세보기</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<br>
+  {% endfor %}
+</div>
+
+{% endblock content %}s
+
+{% block script %}
+
+{% endblock script %}

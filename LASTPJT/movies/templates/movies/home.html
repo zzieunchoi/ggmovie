@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<hr>
+<br>
+<br>
+<!--최신인기작 poster_path 가져와서 image에 넣기!-->
+<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="true">
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="{% static '마녀.png'%}" width="600" height="400" class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="{% static '범죄도시.png'%}" width="600" height="400" class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="{% static '피물진.png'%}" width="600" height="400" class="d-block w-100" alt="...">
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+
+<br>
+<hr>
+<br>
+<br>
+<!--최신인기작 영화 카드-->
+<div class = "container">
+  <div class = "d-flex justify-content-center">
+    <h1 class = "subject"><b>무비차트</b></h1>
+  </div>
+</div>
+
+<br>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  {% for movie in movies %}
+  <div class="col">
+    <div class="card h-100">
+      <!--이미지 넣고-->
+      <img src="{{movie.poster_path}}" class="card-img-top" alt="..." height ="400" width = "150">
+        <div class="card-body">
+        <!--카드 안에 채우고-->
+          <a href = "{% url 'movies:detail' movie.pk%}" class="card-title text-bold text-decoration-none"><b>{{movie.title}}</b></a>
+        </div>
+        <div class="card-footer">
+          <div class = "container">
+            <div class = "d-flex justify-content-end">
+              <p class="card-text"><small class="text-muted">영화 평점:{{movie.vote_average}}</small></p>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  {% endfor %}
+</div>
+<br>
+<hr>
+<br>
+<br>
+<!--커뮤니티 최신 글-->
+<div class = "container">
+  <div class = "d-flex justify-content-center">
+  <h1 class = "subject"><b>커뮤니티</b></h1>
+  </div>
+</div>
+
+<br>
+
+{% if communities|length > 0 %}
+
+{% for community in communities %}
+<div class="card mb-3">
+  <div class="row g-0">
+    <div class="col-md-3">
+      {% if community.imgfile %}
+      <img src="{{community.imgfile.url}}" class="mx-2 my-auto rounded-start " alt="..." height = "200" width = "150">
+      {% else %}
+      <img src = "{% static 'commu_logo.jpg' %}" class="mx-2 my-auto rounded-start" alt="..."> 
+      {% endif %}
+    </div>
+    <div class="col-md-9">
+      <div class="card-body">
+        <h5 class="card-title subject"><b>{{community.title}}</b></h5>
+        <p class="card-text">{{community.content}}</p>
+        <div class = "container">
+          <div class = "d-flex justify-content-end">
+            <a class = "also_btn" href = "{% url 'community:detail' community.pk%}">글 보러가기</a>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer text-muted">
+        작성일: {{community.created_at|date:'Y-m-d'}}
+      </div> 
+    </div>
+  </div>
+</div>
+<br>
+{% endfor %}
+
+{% else %}
+<!--비어있는 이미지 넣고 커뮤니티 게시글 작성하게끔 유도-->
+<div class="card text-center">
+  <div class="card-body">
+    <h5 class="card-title subject">커뮤니티 게시글</h5>
+    <p class="card-text">아직 직성된 글이 없어요! 자유롭게 영화에 대한 의견을 나눠보세요 🎞️❤️</p>
+    <a class = "also_btn" href = "{% url 'community:create'%}">글 작성하기</a>
+  </div>
+</div>
+
+  {% endif %}
+<br>
+<br>
+<br>
+{% endblock  %}
